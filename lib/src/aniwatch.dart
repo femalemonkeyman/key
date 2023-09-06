@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'info_models.dart';
+import 'package:tokuwari_models/info_models.dart';
 import 'aes_decrypt.dart';
 
 const String zoro = "https://aniwatch.to/";

@@ -1,6 +1,7 @@
 name: aniwatch
 description: A sample command-line application.
 version: 1.0.0
+publish_to: none
 # repository: https://github.com/my_org/my_repo
 
 environment:
@@ -11,7 +12,10 @@ dependencies:
  dio: 
  encrypt:
  html:
- isar: 
+ isar:
+ tokuwari_models:
+  git:
+    url: https://github.com/femalemonkeyman/tokuwari-models
   # path: ^1.8.0
 
 dev_dependencies:

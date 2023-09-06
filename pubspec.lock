@@ -393,6 +393,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.6"
+  tokuwari_models:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: e2f463943becd2af47a5d622da70aab932a0d0b1
+      url: "https://github.com/femalemonkeyman/tokuwari-models"
+    source: git
+    version: "1.0.0"
   typed_data:
     dependency: transitive
     description:
