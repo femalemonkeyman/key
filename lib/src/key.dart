@@ -1,4 +1,4 @@
-import 'package:aniwatch/src/aes_decrypt.dart';
+import 'package:key/src/aes_decrypt.dart';
 import 'package:dio/dio.dart';
 
 const String salty = 'U2FsdGVkX1';
