@@ -1,3 +1,3 @@
 library aniwatch;
 
-export 'src/aniwatch.dart' show zoroList;
+export 'src/key.dart' show getSource;
