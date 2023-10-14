@@ -12,7 +12,6 @@ import 'package:dio/dio.dart';
 
 const String salt = "U2FsdGVkX1";
 final Map key = {};
-int retries = 0;
 
 Future<String> getSource(final String link, String sources, bool clear) async {
   int o = 0;
@@ -28,13 +27,9 @@ Future<String> getSource(final String link, String sources, bool clear) async {
               .then((value) => value.data['sources']),
       ],
     );
-    if (retries == 1) {
-      print(responses);
-    }
     key.addAll(sources.split('').asMap());
     for (int i = 0; i < responses.length; i++) {
-      key.removeWhere(
-          (key, value) => value != responses[i][key] || value == '=');
+      key.removeWhere((key, value) => value != responses[i][key] || value == '=');
     }
     for (int i = 0; i < salt.length; i++) {
       if (salt[i] == key.values.elementAt(o)) {
