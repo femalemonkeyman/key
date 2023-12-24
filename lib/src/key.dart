@@ -10,44 +10,88 @@ import 'package:dio/dio.dart';
 //   "UT2UGIAD2FsdGVkX18dVaayXFb4HIN7zvRx06m9jOcXX6hwc0lqJzicMaYjr+6rZIMaaLU+BKv9AJzsHlKZTq2VmYGa5usmX5Zh1sG7Ii+GdiSuj7jl/POwQNzJxJVV0mVmdu+Kncnrz6jTSDBUBsuV3q5Xfpvpr8aNkMQO5cg3C94kmWmd/Ojpjga/NOWnUYDzqsnuHfDbnl8x8ftVLIxeNsWUiS2Nl87C339MikjBJ/3HNkyNSKkhR/kOQMA64T5xHdjxR2vtKDlVM3sGc/5gWwZsP8CGc2o8XILzgh8NFx5y3F1tFRj4Mb0gAHcUqTqvrYhrtqqRA1wMyfFKlg0i1kaLlEJq4anPQDv26FcNBujLpKkWZgQwWzXxvNCiC8VdH8gyQXaQjaChzrW+eMKzEs3su6hYkOSVUg9iNgyev/+4kgVoS7HYOGCKErv1xE6SvNPcIda9Am1Tzmm00LLgRuZYtBS3V9u6gTs88cG/X+JFg==",
 // ];
 
-const String salt = "U2FsdGVkX1";
-final Map key = {};
+//const String salt = "U2FsdGVkX1";
 
-Future<String> getSource(final String link, String sources, bool clear) async {
-  int o = 0;
-  if (clear || key.isEmpty) {
-    key.clear();
-    final List<String> responses = await Future.wait(
-      [
-        for (int i = 0; i < 4; i++)
-          Dio()
-              .get(
-                link,
-              )
-              .then((value) => value.data['sources']),
-      ],
+final extract = <String>[];
+
+Future<String> getSource(String source, bool clear) async {
+  if (clear || extract.isEmpty) {
+    final List<List<int>> key = extractKey(
+      await Dio().get("https://megacloud.tv/js/player/a/prod/e1-player.min.js").then(
+            (value) => value.data,
+          ),
     );
-    key.addAll(sources.split('').asMap());
-    for (int i = 0; i < responses.length; i++) {
-      key.removeWhere((key, value) => value != responses[i][key] || value == '=');
+    extract.clear();
+    for (final i in key) {
+      extract.add(source.substring(i[0], i[0] + i[1]));
+      source = source.replaceRange(i[0], i[0] + i[1], '');
     }
-    for (int i = 0; i < salt.length; i++) {
-      if (salt[i] == key.values.elementAt(o)) {
-        key.remove(key.keys.elementAt(o));
-      } else {
-        o++;
-        i--;
-      }
+  } else {
+    for (final i in extract) {
+      source = source.replaceFirst(i, '');
     }
-  }
-  print(key.values.join());
-  o = 0;
-  for (final i in key.keys) {
-    sources = sources.replaceRange(i - o, i + 1 - o, '');
-    o++;
   }
   return decrypt(
-    sources,
-    key.values.join(),
+    source,
+    extract.join(),
   );
 }
+
+List<List<int>> extractKey(String script) {
+  final regex = RegExp(":[a-zA-Z0-9]+=([a-zA-Z0-9]+),[a-zA-Z0-9]+=([a-zA-Z0-9]+);");
+  final matches = regex.allMatches(
+    script.substring(
+      script.lastIndexOf('switch'),
+      script.indexOf('partKeyStartPosition'),
+    ),
+  );
+  return [
+    for (final match in matches)
+      <int>[
+        for (int i = 1; i <= 2; i++)
+          int.parse(
+            RegExp('${match.group(i)}=0x([a-zA-Z0-9]+)').allMatches(script).last.group(1)!,
+            radix: 16,
+          )
+      ],
+  ];
+}
+
+// Future<String> getSource(final String link, String sources, bool clear) async {
+//   int o = 0;
+//   if (clear || key.isEmpty) {
+//     key.clear();
+//     final List<String> responses = await Future.wait(
+//       [
+//         for (int i = 0; i < 4; i++)
+//           Dio()
+//               .get(
+//                 link,
+//               )
+//               .then((value) => value.data['sources']),
+//       ],
+//     );
+//     key.addAll(sources.split('').asMap());
+//     for (int i = 0; i < responses.length; i++) {
+//       key.removeWhere((key, value) => value != responses[i][key] || value == '=');
+//     }
+//     for (int i = 0; i < salt.length; i++) {
+//       if (salt[i] == key.values.elementAt(o)) {
+//         key.remove(key.keys.elementAt(o));
+//       } else {
+//         o++;
+//         i--;
+//       }
+//     }
+//   }
+//   print(key.values.join());
+//   o = 0;
+//   for (final i in key.keys) {
+//     sources = sources.replaceRange(i - o, i + 1 - o, '');
+//     o++;
+//   }
+//   return decrypt(
+//     sources,
+//     key.values.join(),
+//   );
+// }
