@@ -21,6 +21,7 @@ Future<String> getSource(String source, bool clear) async {
             (value) => value.data,
           ),
     );
+    print(key);
     extract.clear();
     for (final i in key) {
       extract.add(source.substring(i[0], i[0] + i[1]));
